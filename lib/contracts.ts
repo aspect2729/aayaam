@@ -1,0 +1,51 @@
+export type WorkspaceBusiness = {
+  id: string;
+  name: string;
+  city: string;
+  businessType: string;
+  ecommerceBilling: boolean;
+  currency: string;
+  timezone: string;
+  gstin: string | null;
+};
+
+export type Workspace = {
+  user: { id: string; name: string; email: string; role: string };
+  businesses: WorkspaceBusiness[];
+  business: WorkspaceBusiness;
+  permissions: string[];
+  fields: string[];
+  overview: {
+    revenuePaise: number;
+    previousRevenuePaise: number;
+    expensePaise: number;
+    profitPaise: number;
+    profitComplete: boolean;
+    newLeads: number;
+    customers: number;
+    bookReceivablePaise: number;
+    months: Array<{ month: string; revenuePaise: number }>;
+    expenses: Array<{ category: string; paise: number; sharePct: number }>;
+    schedule: Array<{ id: string; time: string; title: string; detail: string }>;
+    inventory: Array<{ id: string; name: string; quantityMilli: number; low: boolean }>;
+    insights: Array<{ id: string; title: string; kind: "fact" | "hypothesis"; detail: string }>;
+  };
+  leads: Array<Record<string, unknown>>;
+  customers: Array<Record<string, unknown>>;
+  products: Array<Record<string, unknown>>;
+  orders: Array<Record<string, unknown>>;
+  invoices: Array<Record<string, unknown>>;
+  payments: Array<Record<string, unknown>>;
+  reconciliation: Array<{ code: string; message: string; entityId: string }>;
+  ledger: Array<Record<string, unknown>>;
+  expenses: Array<Record<string, unknown>>;
+  tasks: Array<Record<string, unknown>>;
+  approvals: Array<Record<string, unknown>>;
+  campaigns: Array<Record<string, unknown>>;
+  reviews: Array<Record<string, unknown>>;
+  integrations: Array<Record<string, unknown>>;
+  members: Array<Record<string, unknown>>;
+  audit: Array<Record<string, unknown>>;
+  backups: Array<{ id: string; sha256: string; created_at: string }>;
+  messages: Array<Record<string, unknown>>;
+};
