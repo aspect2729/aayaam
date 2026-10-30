@@ -51,16 +51,16 @@ const navModule: Record<string, ModuleKey | "tools"> = {
   Settings: "tools",
 };
 
-export function moduleEnabled(type: BusinessType, module: ModuleKey) {
-  return businessTypeConfig[type].modules.includes(module);
+export function moduleEnabled(type: BusinessType, key: ModuleKey) {
+  return businessTypeConfig[type].modules.includes(key);
 }
 
 export function navItemVisible(type: BusinessType, label: string) {
   if (type === "gym" && label === "Leads") return false;
   if (type !== "interior" && label === "Leads") return false;
-  const module = navModule[label];
-  if (!module || module === "tools") return true;
-  return moduleEnabled(type, module);
+  const section = navModule[label];
+  if (!section || section === "tools") return true;
+  return moduleEnabled(type, section);
 }
 
 export function navLabel(type: BusinessType, label: string) {
