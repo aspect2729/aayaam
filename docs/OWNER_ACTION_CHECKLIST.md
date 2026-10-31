@@ -271,6 +271,83 @@ Submit these only for an interior-design WhatsApp account. Category and body mus
 
 - **Status:** Not started
 
+## P0 — Local SEO accounts
+
+These unlock measurement and drafts. None of them publish a listing until you approve the action. The app does not call a provider while the matching flag is blank.
+
+### 27. Google Cloud project, OAuth, and Business Profile API access
+
+- **Why:** Profile reads, posts, review replies, and Search Console share one OAuth client. Business Profile API access is not public.
+- **Where:** [Google Cloud console](https://console.cloud.google.com/) and the prerequisites at [https://developers.google.com/my-business/content/prereqs](https://developers.google.com/my-business/content/prereqs)
+- **Steps:**
+  1. Create a project and an OAuth consent screen. Copy the project number.
+  2. The profile used on the application must be verified and active for 60 days, with a website, and the applicant email must be an owner or manager. Quota of 0 queries per minute means the project is not approved yet. Approval is described as 300 queries per minute on the usage-limits page: [https://developers.google.com/my-business/content/limits](https://developers.google.com/my-business/content/limits)
+  3. After approval, enable Business Information, Account Management, Performance, and the v4 API used for reviews, posts, and media. Confirm the current list on [https://developers.google.com/my-business/content/overview](https://developers.google.com/my-business/content/overview)
+- **Give back:** `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_CLOUD_PROJECT_ID`, then `FEATURE_GBP_API=1`.
+- **Where to put it:** Vercel, server-only.
+- **Status:** Not started
+
+### 28. Places API billing and a restricted key
+
+- **Why:** Place ID, name, address, phone, and competitor details. This is not a rank scraper.
+- **Where:** [https://developers.google.com/maps/documentation/places/web-service/text-search](https://developers.google.com/maps/documentation/places/web-service/text-search) and the price list [https://developers.google.com/maps/billing-and-pricing/pricing](https://developers.google.com/maps/billing-and-pricing/pricing)
+- **Steps:** Enable billing. Restrict the key to the Places API and to this server. Text Search Pro is listed at $32 per 1,000 after the free cap on that price page (checked 31 Oct 2026). Ask only for the fields you need. Place ID-only text search is listed as unlimited on the same page.
+- **Give back:** `GOOGLE_MAPS_API_KEY`, `FEATURE_PLACES=1`.
+- **Status:** Not started
+
+### 29. Search Console verification for each business site
+
+- **Why:** Clicks, impressions, CTR, and URL inspection. The site must be verified by that business.
+- **Where:** [https://search.google.com/search-console](https://search.google.com/search-console) and [https://developers.google.com/webmaster-tools/v1/api_reference_index](https://developers.google.com/webmaster-tools/v1/api_reference_index)
+- **Steps:** The owner verifies the property, then grants the same Google OAuth client access. Do not use the Indexing API for ordinary pages. Its documented scope is job postings and livestreams: [https://developers.google.com/search/apis/indexing-api/v3/quickstart](https://developers.google.com/search/apis/indexing-api/v3/quickstart)
+- **Give back:** `FEATURE_SEARCH_CONSOLE=1` after the OAuth client in item 27 exists.
+- **Status:** Not started
+
+### 30. PageSpeed Insights and Chrome UX Report
+
+- **Why:** Lab scores and real-user Core Web Vitals. CrUX is the field-data source. PageSpeed’s own field data is being retired in favour of CrUX.
+- **Where:** [https://developers.google.com/speed/docs/insights/v5/get-started](https://developers.google.com/speed/docs/insights/v5/get-started) and [https://developer.chrome.com/docs/crux/api](https://developer.chrome.com/docs/crux/api)
+- **Give back:** `GOOGLE_PSI_API_KEY`, `GOOGLE_CRUX_API_KEY`, `FEATURE_PSI=1`, `FEATURE_CRUX=1`. The CrUX page states 150 queries per minute per project and no paid quota increase.
+- **Status:** Not started
+
+### 31. Keyword volumes and the rank grid
+
+- **Why:** Volumes and a Maps rank grid. Do not scrape Google Search or Maps.
+- **Where:** Keyword Planner overview [https://developers.google.com/google-ads/api/docs/keyword-planning/overview](https://developers.google.com/google-ads/api/docs/keyword-planning/overview), or DataForSEO [https://dataforseo.com/pricing](https://dataforseo.com/pricing). Maps SERP pricing page checked 31 Oct 2026 listed Standard queue at $0.0006 per SERP: [https://dataforseo.com/pricing/serp/google-maps-serp-api](https://dataforseo.com/pricing/serp/google-maps-serp-api)
+- **Give back:** Either `GOOGLE_ADS_DEVELOPER_TOKEN` and `GOOGLE_ADS_CUSTOMER_ID`, or `DATAFORSEO_LOGIN` and `DATAFORSEO_PASSWORD`. For ranks, the same DataForSEO pair, or `SERPAPI_API_KEY`, or `LOCAL_FALCON_API_KEY`. Then `FEATURE_KEYWORDS=1` and `FEATURE_RANK=1`.
+- **Budget:** Set a monthly cap in that vendor’s dashboard before the flag is turned on. A 5×5 grid for 10 keywords is 250 lookups a week.
+- **Status:** Not started
+
+### 32. Browser worker, kept in read mode
+
+- **Why:** Crawl the business’s own site. Supervised writing stays off.
+- **Where:** A Node host you control, or Browserbase. Playwright docs: [https://playwright.dev/](https://playwright.dev/)
+- **Give back:** `BROWSER_WORKER_URL`, `BROWSER_WORKER_SECRET`, `FEATURE_BROWSER=1`. Leave `FEATURE_BROWSER_SUPERVISED_WRITE` blank. The worker must not store passwords or solve CAPTCHAs.
+- **Status:** Not started
+
+### 33. WordPress application password, per site
+
+- **Why:** Publish an approved page through the site’s REST API.
+- **Where:** [https://developer.wordpress.org/rest-api/](https://developer.wordpress.org/rest-api/)
+- **Steps:** On each site, Users → Profile → Application Passwords, for a user who can edit pages. Store that password on the connection for that business. There is no global WordPress secret in `.env.example`.
+- **Give back:** The site URL and application password when a business connects. `FEATURE_WORDPRESS` stays a label until that connection exists.
+- **Status:** Not started
+
+### 34. IndexNow and Bing, optional
+
+- **Why:** Tell Bing and other IndexNow participants about an approved URL. Google is not an IndexNow participant.
+- **Where:** [https://www.indexnow.org/documentation](https://www.indexnow.org/documentation) and [Bing Webmaster](https://www.bing.com/webmasters/)
+- **Give back:** `INDEXNOW_KEY`, `BING_WEBMASTER_API_KEY`, `FEATURE_INDEXNOW=1` when you want it.
+- **Status:** Not started
+
+### 35. SEO decisions
+
+- Default autonomy stays Assisted. Thank-you replies for 4–5 star reviews and GBP posts do not auto-publish until you turn that rule on for a business.
+- Set a monthly cap for Places, keyword, and rank calls before those flags are turned on.
+- Do not enable supervised browser writing until you have watched a session and accepted that the owner signs in themselves.
+
+- **Status:** Not started
+
 ## What works with no keys
 
 - The three demo workspaces, labeled Demo data.

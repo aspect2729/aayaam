@@ -195,6 +195,26 @@ Model ids and standard prices are in `lib/ai/pricing.ts`. Sources: [Gemini prici
 
 `FEATURE_AI` defaults off. The workspace assistant classifies a business in code. A model is asked only to rephrase a change list, and only when the flag and a key are present. No vector column was created: the embedding output size is not stated on the price page.
 
+## Local SEO (checked 31 Oct 2026)
+
+The Marketing screen still shows the demo ring, rankings, and chart. Those are labelled as demo. `/api/seo/status` reports each provider as awaiting setup, flag off, or keys present and not called. No adapter performs an HTTP call.
+
+| API | Status | Fallback |
+| --- | --- | --- |
+| Google Business Profile | Awaiting Google’s project approval and OAuth. Docs: https://developers.google.com/my-business/content/prereqs Quotas: https://developers.google.com/my-business/content/limits | Assisted checklist. Nothing is published. |
+| Search Console | Not called. URL inspection is `POST https://searchconsole.googleapis.com/v1/urlInspection/index:inspect`. Reference: https://developers.google.com/webmaster-tools/v1/api_reference_index | No clicks or positions are invented. |
+| Places API (New) | Not called. Text Search is `POST https://places.googleapis.com/v1/places:searchText`. Price list: https://developers.google.com/maps/billing-and-pricing/pricing | The owner-entered name, city, and phone stay the only NAP. |
+| PageSpeed Insights | Not called. `GET https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed`. https://developers.google.com/speed/docs/insights/v5/get-started | No lab score is shown as measured. |
+| Chrome UX Report | Not called. `POST https://chromeuxreport.googleapis.com/v1/records:queryRecord`. 150 queries per minute, no paid increase. https://developer.chrome.com/docs/crux/api | No Core Web Vitals number is shown as measured. |
+| Keyword volumes | Not called. Use Keyword Planner or DataForSEO. https://developers.google.com/google-ads/api/docs/keyword-planning/overview | The keyword list is services × localities, without volumes. |
+| Maps rank grid | Not called. DataForSEO Maps live endpoint is documented at https://docs.dataforseo.com/v3/serp/google/maps/live/advanced/ and priced at https://dataforseo.com/pricing/serp/google-maps-serp-api | The grid geometry is computed. Positions stay empty. |
+| WordPress | Not called. Application password is per site. https://developer.wordpress.org/rest-api/ | Drafts stay in Aayaam. |
+| Browser worker | Not deployed. Safety checks are local functions. | Assisted checklist. |
+| IndexNow | Not called. https://www.indexnow.org/documentation | Google still depends on the sitemap in Search Console. |
+| Google Indexing API | Not used. Documented for `JobPosting` and `BroadcastEvent` only. https://developers.google.com/search/apis/indexing-api/v3/quickstart | Sitemap submission after approval, once Search Console is connected. |
+
+`db/postgres/004_seo.sql` is not applied. Its policies are not active.
+
 ## Open-loop pass
 
 `docs/AUDIT_CURRENT_STATE.md` is the item-by-item status. `docs/OWNER_ACTION_CHECKLIST.md` is the manual work. This pass fixed cross-business demo rows, navigation labels, the gym overview card, the integrations filter, the Kolkata date, and the health text. Screens still read the demo profiles. Phone OTP, Google sign-in, live providers, and a full Postgres migration are waiting on the checklist.

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowDownRight, ArrowUpRight, Check, Minus, Star } from "lucide-react";
 import {
   CartesianGrid,
@@ -29,14 +29,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import { useBusiness } from "@/lib/business-context";
+import { citationDirectories } from "@/lib/seo/directories";
+import { seoConnections } from "@/lib/seo/connections";
+import { weeklySeoPlan } from "@/lib/seo/plan";
 import { record } from "@/lib/record";
+import { useActiveConfig } from "@/lib/workspace/active";
 import { cn } from "@/lib/utils";
 
 const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 export default function MarketingPage() {
   const { business } = useBusiness();
+  const { config } = useActiveConfig();
   const ready = useReady();
+  const [liveStatus, setLiveStatus] = useState<Record<string, string>>({});
   const [published, setPublished] = useState<Record<string, boolean>>({});
   const [replies, setReplies] = useState<Record<string, string>>({});
   const [sentReply, setSentReply] = useState<Record<string, boolean>>({});
@@ -46,6 +52,37 @@ export default function MarketingPage() {
   const [budget, setBudget] = useState(business.campaignDefaults.budget);
   const [location, setLocation] = useState(business.campaignDefaults.location);
   const [briefOn, setBriefOn] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/seo/status")
+      .then((response) => (response.ok ? response.json() : null))
+      .then((body: { items?: Array<{ api: string; status: string }> } | null) => {
+        if (!body || cancelled) return;
+        const next: Record<string, string> = {};
+        for (const item of body.items ?? []) next[item.api] = item.status;
+        setLiveStatus(next);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const services = config?.business.services.length
+    ? config.business.services
+    : business.type === "interior"
+      ? ["interior design", "modular kitchen"]
+      : business.type === "handicraft"
+        ? ["handicrafts"]
+        : ["gym", "women's fitness"];
+  const localities = config?.business.localities.length ? config.business.localities : [business.city];
+  const plan = weeklySeoPlan({
+    services,
+    localities,
+    languages: config?.business.languages,
+    archetype: config?.archetype ?? (business.type === "gym" ? "gym_fitness" : business.type === "interior" ? "interior_design" : "ecommerce_handicraft"),
+  });
 
   const gbpDone = business.gbp.filter((item) => item.done).length;
   const gbpPct = Math.round((gbpDone / business.gbp.length) * 100);
@@ -87,7 +124,7 @@ export default function MarketingPage() {
               <div className="grid gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
                 <Card className="flex flex-col items-center p-6">
                   <ScoreRing score={business.seoScore} />
-                  <p className="mt-2 text-center text-sm text-secondary">SEO health for {business.city}</p>
+                  <p className="mt-2 text-center text-sm text-secondary">Demo figure for {business.city}. Not measured from Google.</p>
                 </Card>
                 <Card className="p-6">
                   <SectionHeader
@@ -114,7 +151,52 @@ export default function MarketingPage() {
               </div>
 
               <Card className="p-6">
-                <SectionHeader title="Local rankings" description="Position and movement versus last week." />
+                <SectionHeader title="This week, from the workspace" description="Rules only. No volume, rank, or model call." />
+                <p className="mt-3 text-sm text-secondary">{plan.post.reason}</p>
+                <ul className="mt-3 space-y-2 text-sm">
+                  {plan.keywords.slice(0, 6).map((keyword) => (
+                    <li key={keyword}>{keyword}</li>
+                  ))}
+                </ul>
+                <p className="mt-3 text-[12px] text-secondary">A {plan.grid.points}-point grid at {plan.grid.radiusKm} km is ready. No rank check has run.</p>
+              </Card>
+
+              <Card className="p-6">
+                <SectionHeader title="Connections" description="Each row stays here until that account exists. Nothing is called." />
+                <ul className="mt-4 space-y-2 text-sm">
+                  {seoConnections.map((item) => (
+                    <li key={item.api} className="flex flex-wrap items-center justify-between gap-2">
+                      <span>{item.api}</span>
+                      <StatusChip tone="sand">{connectionLabel(liveStatus[item.api])}</StatusChip>
+                    </li>
+                  ))}
+                </ul>
+              </Card>
+
+              <Card className="p-6">
+                <SectionHeader title="Citations" description="Directories to check. None have been read." />
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Directory</TableHead>
+                      <TableHead>How a fix would be made</TableHead>
+                      <TableHead>Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {citationDirectories.map((row) => (
+                      <TableRow key={row.key}>
+                        <TableCell className="font-medium">{row.name}</TableCell>
+                        <TableCell>{row.method}</TableCell>
+                        <TableCell>Not checked</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Card>
+
+              <Card className="p-6">
+                <SectionHeader title="Local rankings" description="Demo positions from the sample profile. A rank check has not been run." />
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -153,7 +235,7 @@ export default function MarketingPage() {
               </Card>
 
               <Card className="p-6">
-                <SectionHeader title="Search performance" description="Clicks and impressions, Search Console style." />
+                <SectionHeader title="Search performance" description="Demo series. Search Console is not connected." />
                 <div className="mt-4 h-72">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={business.searchSeries}>
@@ -255,13 +337,13 @@ export default function MarketingPage() {
         <TabsContent value="aeo" className="space-y-3">
           <SectionHeader
             title="Questions people ask assistants"
-            description="Whether this business is mentioned, and the content that would help."
+            description="Sample questions from the demo profile. An assistant check has not been run."
           />
           {business.aeo.map((item) => (
             <Card key={item.question} className="p-5 hover:shadow-cardHover">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <h3 className="text-[16px] font-semibold tracking-[-0.02em]">{item.question}</h3>
-                <StatusChip tone={item.mentioned ? "mint" : "sand"}>{item.mentioned ? "Mentioned" : "Not mentioned"}</StatusChip>
+                <StatusChip tone="sand">Sample</StatusChip>
               </div>
               <p className="mt-3 text-sm text-secondary">
                 <BrainMark /> <span className="ml-2">{item.suggestion}</span>
@@ -465,7 +547,7 @@ function ScoreRing({ score }: { score: number }) {
   const circ = 2 * Math.PI * radius;
   const offset = circ - (score / 100) * circ;
   return (
-    <div className="relative h-36 w-36" role="img" aria-label={`SEO health ${score} out of 100`}>
+    <div className="relative h-36 w-36" role="img" aria-label={`Demo SEO figure ${score} out of 100`}>
       <svg viewBox="0 0 140 140" className="h-full w-full -rotate-90">
         <circle cx="70" cy="70" r={radius} fill="none" stroke="#EEF2FD" strokeWidth="12" />
         <circle
@@ -532,6 +614,12 @@ function QrPreview() {
       ))}
     </div>
   );
+}
+
+function connectionLabel(status?: string) {
+  if (status === "keys_present_not_called") return "Keys present, not called";
+  if (status === "off") return "Flag off";
+  return "Awaiting setup";
 }
 
 function Field({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {

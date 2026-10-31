@@ -9,6 +9,7 @@ const rules: Record<string, AgentKey[]> = {
   "message.inbound": ["sales", "crm_whatsapp"],
   "review.received": ["marketing_seo"],
   "gbp.post_due": ["marketing_seo"],
+  "seo.week_due": ["marketing_seo"],
   "order.stuck": ["commerce", "operations"],
   "stock.low": ["commerce"],
   "task.due": ["operations"],
@@ -36,6 +37,12 @@ export function ruleProposal(agent: AgentKey, type: string) {
   }
   if (agent === "marketing_seo" && type === "gbp.post_due") {
     return { type: "gbp.post.propose", actionClass: 3 as const, payload: { cadenceDays: 3 } };
+  }
+  if (agent === "marketing_seo" && type === "review.received") {
+    return { type: "gbp.review_reply.propose", actionClass: 3 as const, payload: { note: "A public reply stays a draft until it is approved." } };
+  }
+  if (agent === "marketing_seo" && type === "seo.week_due") {
+    return { type: "seo.plan.update", actionClass: 2 as const, payload: { schedule: "Monday 07:00 Asia/Kolkata" } };
   }
   if (agent === "commerce" && type === "stock.low") {
     return { type: "reorder.propose", actionClass: 3 as const, payload: {} };
