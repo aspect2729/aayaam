@@ -47,6 +47,7 @@ const navModule: Record<string, ModuleKey | "tools"> = {
   Analytics: "finance",
   Dashboard: "overview",
   Reports: "tools",
+  "Agent activity": "tools",
   Integrations: "tools",
   Settings: "tools",
 };
@@ -56,6 +57,7 @@ export function moduleEnabled(type: BusinessType, key: ModuleKey) {
 }
 
 export function navItemVisible(type: BusinessType, label: string) {
+  if (label === "Qualification" && type !== "interior") return false;
   if (type === "gym" && label === "Leads") return false;
   if (type !== "interior" && label === "Leads") return false;
   const section = navModule[label];
@@ -65,4 +67,10 @@ export function navItemVisible(type: BusinessType, label: string) {
 
 export function navLabel(type: BusinessType, label: string) {
   return businessTypeConfig[type].labels[label] ?? label;
+}
+
+export function integrationForBusiness(type: BusinessType, commerceOnly: boolean | undefined, showAll: boolean) {
+  if (!commerceOnly) return true;
+  if (showAll) return true;
+  return type === "handicraft";
 }

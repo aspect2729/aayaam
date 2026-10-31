@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import Database from "better-sqlite3";
+import { ensureOutreachTables } from "@/server/outreach/schema";
 
 const schemaPath = path.join(process.cwd(), "server/db/schema.sql");
 
@@ -14,6 +15,7 @@ export function openDatabase(filename: string): Database.Database {
   const db = new Database(filename);
   db.pragma("foreign_keys = ON");
   db.exec(schemaSql());
+  ensureOutreachTables(db);
   return db;
 }
 

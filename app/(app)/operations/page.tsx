@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import { IllustrativeNote } from "@/components/shared/illustrative-note";
 import { EmptyState } from "@/components/shared/empty-state";
@@ -19,6 +19,19 @@ const startHour = 8;
 const endHour = 19;
 const hourHeight = 68;
 
+function istCalendarDate(offset: number) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+  const [year, month, day] = parts.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+  date.setDate(date.getDate() + offset);
+  return date;
+}
+
 function toMinutes(value: string) {
   const [hour, minute] = value.split(":").map(Number);
   return hour * 60 + minute;
@@ -31,15 +44,22 @@ export default function OperationsPage() {
   const [offset, setOffset] = useState(0);
   const [done, setDone] = useState<Record<string, boolean>>({});
   const [flows, setFlows] = useState(business.workflows);
+  const [visits, setVisits] = useState<{ id: string; designer_name: string; start_at: string; address: string; lead_id: string }[]>([]);
 
-  const date = useMemo(() => {
-    const next = new Date(2026, 9, 30);
-    next.setDate(next.getDate() + offset);
-    return next;
-  }, [offset]);
+  useEffect(() => {
+    if (business.type !== "interior") return;
+    void fetch(`/api/outreach?workspace=${business.id}`)
+      .then((response) => (response.ok ? response.json() : null))
+      .then((body) => {
+        if (body?.visits) setVisits(body.visits);
+      })
+      .catch(() => setVisits([]));
+  }, [business.id, business.type]);
 
-  const heading = date.toLocaleDateString("en-IN", { day: "numeric", month: "long" });
-  const weekday = date.toLocaleDateString("en-IN", { weekday: "long" });
+  const date = useMemo(() => istCalendarDate(offset), [offset]);
+
+  const heading = date.toLocaleDateString("en-IN", { day: "numeric", month: "long", timeZone: "Asia/Kolkata" });
+  const weekday = date.toLocaleDateString("en-IN", { weekday: "long", timeZone: "Asia/Kolkata" });
   const hours = Array.from({ length: endHour - startHour }, (_, index) => startHour + index);
   const showEvents = offset === 0;
 
@@ -155,6 +175,23 @@ export default function OperationsPage() {
           </ul>
         </Card>
       </div>
+      {business.type === "interior" ? (
+        <Card className="p-4 md:p-6">
+          <SectionHeader title="Site visits" description="Booked from qualification. Google Calendar is not connected." />
+          {visits.length === 0 ? (
+            <p className="mt-3 text-sm text-secondary">No site visit is booked yet.</p>
+          ) : (
+            <ul className="mt-3 space-y-2">
+              {visits.map((visit) => (
+                <li key={visit.id} className="rounded-inner border border-line px-3 py-3 text-sm">
+                  <span className="font-medium">{new Date(visit.start_at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}</span>
+                  <span className="text-secondary"> · {visit.designer_name} · {visit.address}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+      ) : null}
     </div>
   );
 }

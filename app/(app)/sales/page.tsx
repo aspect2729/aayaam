@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { Flag, Inbox } from "lucide-react";
 import {
   Bar,
@@ -95,7 +96,14 @@ export default function SalesPage() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <IllustrativeNote />
-        <p className="text-sm text-secondary">Third column is {business.visitLabel.toLowerCase()} for this workspace.</p>
+        {business.type === "interior" ? (
+          <Link href="/outreach" className="text-sm font-medium text-accent">
+            Qualification inbox
+          </Link>
+        ) : null}
+        <p className="text-sm text-secondary">
+          Columns run New, Qualified, {business.visitLabel}, Quotation, Won, Lost.
+        </p>
       </div>
       <Card className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
         <div>

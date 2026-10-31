@@ -102,11 +102,16 @@ export const integrationCatalog: IntegrationDef[] = [
     mark: "W",
     tone: "mint",
   },
-  { id: "shopify", name: "Shopify", description: "Products, orders, and inventory.", mark: "Sh", tone: "lavender" },
-  { id: "woocommerce", name: "WooCommerce", description: "WordPress catalogue and orders.", mark: "Wo", tone: "blue" },
+  { id: "shopify", name: "Shopify", description: "Products, orders, and inventory.", mark: "Sh", tone: "lavender", commerceOnly: true },
+  { id: "woocommerce", name: "WooCommerce", description: "WordPress catalogue and orders.", mark: "Wo", tone: "blue", commerceOnly: true },
   { id: "razorpay", name: "Razorpay", description: "Payments and settlements.", mark: "R", tone: "sand" },
   { id: "wordpress", name: "WordPress", description: "Pages the SEO agent can draft for.", mark: "W", tone: "lavender" },
-  { id: "shiprocket", name: "Shiprocket", description: "Pickups, tracking, and returns.", mark: "Sr", tone: "mint" },
+  { id: "shiprocket", name: "Shiprocket", description: "Pickups, tracking, and returns.", mark: "Sr", tone: "mint", commerceOnly: true },
+  { id: "email", name: "Email", description: "Sending domain, SPF, DKIM, and inbound replies.", mark: "E", tone: "blue", special: "awaiting" },
+  { id: "sheets", name: "Google Sheets", description: "Import leads or members from a sheet.", mark: "Gs", tone: "mint", special: "awaiting" },
+  { id: "zoho", name: "Zoho CRM", description: "India data centre connector.", mark: "Z", tone: "sand", special: "awaiting" },
+  { id: "notion", name: "Notion", description: "Lead database connector.", mark: "N", tone: "lavender", special: "awaiting" },
+  { id: "odoo", name: "Odoo", description: "Customer API-key connector.", mark: "O", tone: "blue", special: "awaiting" },
   {
     id: "meta",
     name: "Meta Ads",
@@ -564,14 +569,14 @@ const shakti: BusinessProfile = {
     { id: "p1", name: "Annual membership", category: "Membership", price: "₹18,000", stock: 40, revenue: "₹1,80,000", marginLabel: "66% margin", marginTone: "mint" },
     { id: "p2", name: "Personal training pack", category: "Training", price: "₹8,000", stock: 18, revenue: "₹96,000", marginLabel: "57% margin", marginTone: "mint" },
     { id: "p3", name: "Day pass", category: "Visit", price: "₹300", stock: 80, revenue: "₹28,000", marginLabel: "68% margin", marginTone: "mint" },
-    { id: "p4", name: "Protein retail", category: "Counter", price: "₹2,400", stock: 6, revenue: "₹22,000", marginLabel: "Cost missing", marginTone: "sand", costMissing: true },
+    { id: "p4", name: "Protein add-on", category: "Add-on", price: "₹2,400", stock: 6, revenue: "₹22,000", marginLabel: "Cost missing", marginTone: "sand", costMissing: true },
   ],
   orders: [
     { id: "SF-1842", customer: "Meera Joshi", items: "Annual membership", total: "₹18,000", status: "Paid", channel: "Razorpay", date: "12 Oct" },
-    { id: "SF-1850", customer: "Front desk", items: "Day pass × 6", total: "₹1,800", status: "Delivered", channel: "Counter", date: "28 Oct" },
+    { id: "SF-1850", customer: "Walk-in guests", items: "Day pass × 6", total: "₹1,800", status: "Paid", channel: "Recorded", date: "28 Oct" },
     { id: "SF-1854", customer: "Arjun Reddy", items: "Student quarterly", total: "₹12,000", status: "Packed", channel: "Razorpay", date: "29 Oct" },
-    { id: "SF-1855", customer: "Neha Kulkarni", items: "Protein retail", total: "₹2,400", status: "Paid", channel: "Razorpay", date: "30 Oct" },
-    { id: "SF-1833", customer: "Imran Shaikh", items: "Day pass", total: "₹300", status: "Returned", channel: "Counter", date: "18 Oct" },
+    { id: "SF-1855", customer: "Neha Kulkarni", items: "Protein add-on", total: "₹2,400", status: "Paid", channel: "Razorpay", date: "30 Oct" },
+    { id: "SF-1833", customer: "Imran Shaikh", items: "Day pass", total: "₹300", status: "Returned", channel: "Recorded", date: "18 Oct" },
   ],
   stock: [
     { name: "Annual slots", stock: 40, forecast: 28 },
@@ -585,7 +590,7 @@ const shakti: BusinessProfile = {
     { name: "Guest towels", left: "11 left", reorder: false },
   ],
   suppliers: [
-    { id: "s1", name: "Malnad Supplements", category: "Counter retail", city: "Hubballi", leadTime: "4 days", note: "Invoice pending for October" },
+    { id: "s1", name: "Malnad Supplements", category: "Add-ons", city: "Hubballi", leadTime: "4 days", note: "Invoice pending for October" },
     { id: "s2", name: "Deccan Laundry", category: "Towels", city: "Dharwad", leadTime: "2 days", note: "Standing Monday pickup" },
   ],
   returns: [
@@ -593,14 +598,14 @@ const shakti: BusinessProfile = {
   ],
   commerceInsights: [
     { id: "c1", title: "Annual memberships carry the month", detail: "₹1,80,000 of illustrative membership revenue, with trainer time already in the cost record.", action: "Protect renewal reminders before discounting new joins." },
-    { id: "c2", title: "Protein retail has no cost on file", detail: "Revenue is visible, profit is not.", action: "Ask Malnad Supplements for the October invoice." },
-    { id: "c3", title: "Day passes are busy but small", detail: "They fill the floor at 6 pm without filling the annual plan.", action: "Offer a 7-day bridge price at the front desk." },
+    { id: "c2", title: "Protein add-on has no cost on file", detail: "Revenue is visible, profit is not.", action: "Ask Malnad Supplements for the October invoice." },
+    { id: "c3", title: "Day passes are busy but small", detail: "They fill the floor at 6 pm without filling the annual plan.", action: "Offer a 7-day bridge price after a trial." },
   ],
   financeKpis: [
     { id: "rev", label: "Revenue", value: "₹4,80,000", delta: "12%", direction: "up" },
     { id: "exp", label: "Expenses", value: "₹2,60,000", delta: "6%", direction: "up" },
     { id: "gm", label: "Gross margin", value: "46%" },
-    { id: "cash", label: "Cash in hand", value: "₹1,12,000" },
+    { id: "cash", label: "Recorded cash", value: "₹1,12,000" },
     { id: "due", label: "Outstanding payments", value: "₹64,000" },
   ],
   months: [
@@ -622,7 +627,7 @@ const shakti: BusinessProfile = {
     { name: "Annual membership", revenue: 180000, cost: 62000 },
     { name: "Personal training", revenue: 96000, cost: 41000 },
     { name: "Day pass", revenue: 28000, cost: 9000 },
-    { name: "Protein retail", revenue: 22000, cost: null },
+    { name: "Protein add-on", revenue: 22000, cost: null },
   ],
   financeStory: {
     title: "Product A — High performer — ₹1,80,000 (illustrative monthly revenue)",
@@ -634,14 +639,14 @@ const shakti: BusinessProfile = {
     next: [
       "Do not discount annual plans until the 27 expiring memberships are asked to renew.",
       "Pair each renewal with one personal-training intro, which has the next-best margin.",
-      "Enter the protein invoice so that counter sale stops looking more profitable than it is.",
+      "Enter the protein invoice before treating that add-on as profitable.",
     ],
   },
-  cashNote: "Cash in hand is after the Razorpay settlement dated 28 Oct.",
+  cashNote: "Recorded cash is a demo book figure. It is not a bank settlement.",
   events: [
     { id: "e1", title: "Trial session — Priya", start: "09:00", end: "10:00", tone: "blue", detail: "Vidyanagar floor" },
-    { id: "e2", title: "Site visit — Jayanagar flat", start: "11:30", end: "12:30", tone: "sand", detail: "Sample block" },
-    { id: "e3", title: "Supplier call — clay pots", start: "14:00", end: "14:45", tone: "lavender", detail: "Stock check" },
+    { id: "e2", title: "Renewal calls — evening batch", start: "11:30", end: "12:30", tone: "sand", detail: "Memberships ending this week" },
+    { id: "e3", title: "Trainer check — Anusha", start: "14:00", end: "14:45", tone: "lavender", detail: "Saturday trial roster" },
     { id: "e4", title: "Renewal follow-ups (8)", start: "16:00", end: "17:00", tone: "mint", detail: "Needs approval" },
   ],
   tasks: [
@@ -660,12 +665,12 @@ const shakti: BusinessProfile = {
     { id: "a2", agent: "Sales", task: "Score new website enquiries", status: "done", time: "Today · 7:40 am", input: "6 form fills since yesterday", reasoning: "Budget and location were present on 4 of 6.", action: "Tagged 4 as AI qualified", result: "Scores written onto the lead cards" },
     { id: "a3", agent: "Marketing", task: "Check local rankings", status: "done", time: "Today · 6:30 am", input: "4 Hubli keywords", reasoning: "Women’s classes slipped by 2 places.", action: "Proposed a metadata fix", result: "Draft is on the Local SEO tab" },
     { id: "a4", agent: "Operations", task: "Build today’s floor schedule", status: "running", time: "Today · 8:25 am", input: "Trials, renewals, trainer roster", reasoning: "Priya’s trial overlaps the front-desk break.", action: "Moving the break by 20 minutes", result: "Still writing the schedule" },
-    { id: "a5", agent: "Finance", task: "Margin check on counter sales", status: "failed", time: "Yesterday", input: "Protein retail invoices", reasoning: "No cost row for October.", action: "Stopped before publishing a margin", result: "Marked cost missing" },
-    { id: "a6", agent: "Commerce", task: "Count retail stock", status: "done", time: "Yesterday", input: "Counter SKUs", reasoning: "Protein tins will not last 14 days at this pace.", action: "Suggested a reorder", result: "Task created for Arun" },
+    { id: "a5", agent: "Finance", task: "Check membership dues", status: "failed", time: "Yesterday", input: "Quarterly plans", reasoning: "The protein add-on has no cost row for October.", action: "Stopped before publishing a margin", result: "Marked cost missing" },
+    { id: "a6", agent: "Operations", task: "Review expiring memberships", status: "done", time: "Yesterday", input: "Memberships ending in 14 days", reasoning: "Eight members have no renewal note.", action: "Suggested reminder drafts", result: "Task created for Arun" },
   ],
   approvals: approvalList("g", [
     "Priya Kulkarni · trial reminder",
-    "Sana Mulla · quotation nudge",
+    "Sana Mulla · renewal reminder",
     "Lakshmi Hegde · trainer booking",
     "Arjun Reddy · student plan",
     "Kiran Gowda · first reply",
@@ -878,8 +883,8 @@ function gymAnswers(): BrainAnswer[] {
     },
     {
       match: "profitable",
-      changed: ["Annual membership is the high performer at ₹1,80,000 illustrative revenue.", "Personal training is second.", "Protein retail has revenue and no cost."],
-      why: ["Membership cost is on file, so the 66% margin is real.", "Counter sales look busy and are not yet comparable."],
+      changed: ["Annual membership is the high performer at ₹1,80,000 illustrative revenue.", "Personal training is second.", "The protein add-on has revenue and no cost."],
+      why: ["Membership cost is on file, so the 66% margin is usable in this demo.", "The protein add-on has revenue and no cost, so it is not comparable yet."],
       actions: ["Protect renewals before any discount.", "Enter the protein invoice.", "Attach one training intro to each renewal call."],
     },
     {
@@ -1338,7 +1343,7 @@ const mitti: BusinessProfile = {
     { id: "rev", label: "Revenue", value: "₹6,20,000", delta: "9%", direction: "up" },
     { id: "exp", label: "Expenses", value: "₹3,40,000", delta: "4%", direction: "up" },
     { id: "gm", label: "Gross margin", value: "38%" },
-    { id: "cash", label: "Cash in hand", value: "₹1,48,000" },
+    { id: "cash", label: "Recorded cash", value: "₹1,48,000" },
     { id: "due", label: "Outstanding payments", value: "₹86,000", attention: true },
   ],
   months: [
@@ -1375,7 +1380,7 @@ const mitti: BusinessProfile = {
       "Ask Mandya Cane Shed for a written cost before the wedding-basket batch.",
     ],
   },
-  cashNote: "Cash in hand excludes ₹86,000 still sitting in homestay invoices.",
+  cashNote: "Recorded cash is a demo book figure. It excludes ₹86,000 still sitting in homestay invoices, and it is not a bank settlement.",
   events: [
     { id: "me1", title: "Packing batch — wooden lamps", start: "10:00", end: "11:30", tone: "blue", detail: "Indiranagar order" },
     { id: "me2", title: "Courier pickup — Shiprocket", start: "12:30", end: "13:00", tone: "mint", detail: "VV Mohalla" },
@@ -1872,7 +1877,7 @@ const aangan: BusinessProfile = {
     { id: "AA-104", customer: "Tara Menon", items: "Milestone 1", total: "₹4,00,000", status: "Paid", channel: "Razorpay", date: "20 Oct" },
     { id: "AA-108", customer: "Aditi Shah", items: "3D render set", total: "₹18,000", status: "Delivered", channel: "Razorpay", date: "4 Sep" },
     { id: "AA-111", customer: "Nikhil Jain", items: "Site survey", total: "₹5,000", status: "Paid", channel: "Razorpay", date: "30 Oct" },
-    { id: "AA-099", customer: "Kiran Bhat", items: "Snag visit", total: "₹8,000", status: "Packed", channel: "Counter", date: "10 Oct" },
+    { id: "AA-099", customer: "Kiran Bhat", items: "Snag visit", total: "₹8,000", status: "Paid", channel: "Recorded", date: "10 Oct" },
     { id: "AA-090", customer: "Vivek Rao", items: "Render deposit", total: "₹6,000", status: "Returned", channel: "Razorpay", date: "15 Oct" },
   ],
   stock: [
@@ -1902,7 +1907,7 @@ const aangan: BusinessProfile = {
     { id: "rev", label: "Revenue", value: "₹9,40,000", delta: "7%", direction: "up" },
     { id: "exp", label: "Expenses", value: "₹4,10,000", delta: "3%", direction: "up" },
     { id: "gm", label: "Gross margin", value: "41%" },
-    { id: "cash", label: "Cash in hand", value: "₹2,05,000" },
+    { id: "cash", label: "Recorded cash", value: "₹2,05,000" },
     { id: "due", label: "Outstanding payments", value: "₹3,20,000", attention: true },
   ],
   months: [
@@ -1939,7 +1944,7 @@ const aangan: BusinessProfile = {
       "Log travel time on site surveys before the next price list.",
     ],
   },
-  cashNote: "Outstanding payments are mostly milestone 2 on the Koramangala apartment.",
+  cashNote: "Recorded cash is a demo book figure, not a bank settlement. Outstanding payments are mostly milestone 2 on the Koramangala apartment.",
   events: [
     { id: "ie1", title: "Client call — Indiranagar cafe", start: "09:30", end: "10:00", tone: "blue", detail: "Rohit Malhotra" },
     { id: "ie2", title: "Site visit — Jayanagar flat", start: "11:30", end: "12:30", tone: "sand", detail: "Ananya Krishnan" },
@@ -1963,7 +1968,7 @@ const aangan: BusinessProfile = {
     { id: "ia3", agent: "Marketing", task: "Commercial page for assistants", status: "done", time: "Today · 7:10 am", input: "AEO question list", reasoning: "Mysuru question is a gap. Bengaluru commercial is only partly covered.", action: "Proposed two page fixes", result: "On the Local SEO tab" },
     { id: "ia4", agent: "Finance", task: "Milestone cash check", status: "done", time: "Yesterday", input: "Koramangala schedule", reasoning: "Milestone 2 is the bulk of outstanding.", action: "Flagged the KPI", result: "Shown as needs attention" },
     { id: "ia5", agent: "Customer", task: "Draft reply to the chase review", status: "pending", time: "Yesterday", input: "2-star review", reasoning: "The review describes the same follow-up gap.", action: "Apology drafted", result: "Needs approval" },
-    { id: "ia6", agent: "Commerce", task: "Render queue capacity", status: "failed", time: "Yesterday", input: "Designer hours", reasoning: "Site survey cost is blank, so capacity profit was not published.", action: "Stopped", result: "Cost missing on the survey row" },
+    { id: "ia6", agent: "Finance", task: "Site survey cost check", status: "failed", time: "Yesterday", input: "Designer hours", reasoning: "Site survey cost is blank, so that line was not ranked.", action: "Stopped", result: "Cost missing on the survey row" },
   ],
   approvals: approvalList("i", [
     "Ananya Krishnan · visit confirm",

@@ -1,19 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { ChevronDown, Sparkles } from "lucide-react";
 import { BusinessSwitcher } from "@/components/shell/business-switcher";
 import { isNavActive } from "@/components/shell/nav";
 import { useWorkspaceNav } from "@/lib/use-workspace-nav";
-import { owner } from "@/lib/mock-data";
-import { toast } from "@/components/ui/use-toast";
+import { istLabel } from "@/lib/ist";
+import { useSession } from "@/lib/session-context";
 import { cn } from "@/lib/utils";
 
 export function Sidebar() {
   const pathname = usePathname();
-  const router = useRouter();
   const { home, tools } = useWorkspaceNav();
+  const session = useSession();
+  const [today, setToday] = useState("Asia/Kolkata");
+
+  useEffect(() => {
+    setToday(istLabel());
+  }, []);
 
   return (
     <aside className="sticky top-0 hidden h-screen w-[268px] shrink-0 flex-col bg-white px-4 py-5 lg:flex">
@@ -31,9 +37,11 @@ export function Sidebar() {
         <h2 className="text-[26px] font-semibold leading-[1.15] tracking-[-0.03em]">
           Welcome
           <br />
-          Back, {owner.firstName}!
+          Back, {session.name}!
         </h2>
-        <p className="mt-2 text-[13px] leading-5 text-secondary">Here&apos;s your business overview today.</p>
+        <p className="mt-2 text-[13px] leading-5 text-secondary">
+          Demo workspace · {today}
+        </p>
       </div>
 
       <div className="mt-4 px-1">
@@ -54,7 +62,7 @@ export function Sidebar() {
                 key={item.label}
                 href={item.href}
                 onClick={(event) => {
-                  if (!item.href.includes("#")) return;
+                  if (item.href !== "/brain" || pathname !== "/") return;
                   const target = document.getElementById("brain");
                   if (!target) return;
                   event.preventDefault();
@@ -99,12 +107,9 @@ export function Sidebar() {
         </nav>
       </div>
 
-      <button
-        className="relative mt-3 overflow-hidden rounded-[22px] bg-[#F3EEFF] p-4 text-left transition-transform duration-200 hover:-translate-y-0.5"
-        onClick={() => {
-          toast({ title: "Growth plan", description: "Plan billing is not connected. Opening settings." });
-          router.push("/settings/permissions");
-        }}
+      <Link
+        href="/plans"
+        className="relative mt-3 block overflow-hidden rounded-[22px] bg-[#F3EEFF] p-4 text-left transition-transform duration-200 hover:-translate-y-0.5"
       >
         <span className="absolute -right-3 -top-4 h-16 w-16 rounded-full bg-[#E4D9FF]" aria-hidden />
         <Sparkles className="h-4 w-4 text-accent" aria-hidden />
@@ -113,7 +118,7 @@ export function Sidebar() {
         <span className="mt-3 inline-flex items-center rounded-full bg-[#17171C] px-3 py-1.5 text-[12px] font-medium text-white">
           Upgrade Now →
         </span>
-      </button>
+      </Link>
     </aside>
   );
 }

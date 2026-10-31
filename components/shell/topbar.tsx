@@ -5,11 +5,14 @@ import { useMemo, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { LayoutGrid, Search, Settings } from "lucide-react";
 import { isNavActive } from "@/components/shell/nav";
-import { useWorkspaceNav, workspacePageMeta } from "@/lib/use-workspace-nav";
+import { useWorkspaceNav } from "@/lib/use-workspace-nav";
+import { navLabel } from "@/lib/business-types";
+import { titleForPath } from "@/lib/page-title";
 import { Input } from "@/components/ui/input";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { owner } from "@/lib/mock-data";
 import { useBusiness } from "@/lib/business-context";
+import { useSession } from "@/lib/session-context";
 import { buildSearchIndex } from "@/lib/search";
 import { cn } from "@/lib/utils";
 
@@ -17,8 +20,9 @@ export function Topbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { business } = useBusiness();
-  const { pills, items } = useWorkspaceNav();
-  const meta = workspacePageMeta(items, pathname);
+  const session = useSession();
+  const { pills } = useWorkspaceNav();
+  const heading = navLabel(business.type, titleForPath(pathname));
   const [query, setQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
 
@@ -87,29 +91,49 @@ export function Topbar() {
             </div>
           </PopoverContent>
         </Popover>
-        <Link
-          href="/settings/permissions"
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-[#3C4254] shadow-card transition-transform duration-200 hover:scale-105"
-          aria-label="Settings"
-        >
-          <Settings className="h-4 w-4" />
-        </Link>
-        <div className="hidden shrink-0 items-center gap-2 rounded-full bg-white py-1 pl-1 pr-3 shadow-card sm:flex">
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#EDE7FF] text-sm font-semibold text-accent">
-            {owner.initials}
-          </span>
-          <span>
-            <span className="block text-[13px] font-semibold leading-4">{owner.firstName}</span>
-            <span className="block text-[11px] text-secondary">{owner.role}</span>
-          </span>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              className="flex h-10 shrink-0 items-center gap-2 rounded-full bg-white px-1.5 text-[#3C4254] shadow-card"
+              aria-label="Account menu"
+            >
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#EDE7FF] text-sm font-semibold text-accent">
+                {session.name.slice(0, 1)}
+              </span>
+              <span className="hidden pr-2 text-left sm:block">
+                <span className="block text-[13px] font-semibold leading-4">{session.name}</span>
+                <span className="block text-[11px] text-secondary">Demo</span>
+              </span>
+              <Settings className="mr-1 hidden h-4 w-4 sm:block" aria-hidden />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onSelect={() => router.push("/settings/permissions")}>Settings</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => router.push("/settings/system")}>System status</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => router.push("/plans")}>Plans</DropdownMenuItem>
+            {session.signedIn ? (
+              <DropdownMenuItem
+                onSelect={() => {
+                  void fetch("/api/auth/logout", { method: "POST" }).then(() => {
+                    session.refresh();
+                    router.push("/");
+                  });
+                }}
+              >
+                Sign out
+              </DropdownMenuItem>
+            ) : (
+              <DropdownMenuItem onSelect={() => router.push("/login")}>Sign in</DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       {pathname !== "/" ? (
         <div className="mt-4 flex items-end justify-between gap-3">
           <div>
-            <h1 className="text-[26px] font-semibold tracking-[-0.03em]">{meta.label}</h1>
+            <h1 className="text-[26px] font-semibold tracking-[-0.03em]">{heading}</h1>
             <p className="mt-1 text-[13px] text-secondary">
-              Overview <span className="px-1 text-muted">›</span> {meta.label}
+              Overview <span className="px-1 text-muted">›</span> {heading}
             </p>
           </div>
           <LayoutGrid className="hidden h-4 w-4 text-secondary sm:block" aria-hidden />

@@ -22,9 +22,7 @@ export default function PermissionsPage() {
     void fetch("/api/health")
       .then((response) => response.json())
       .then((body) => {
-        setHealth(
-          `Local database has ${body.businesses} businesses, ${body.customers} customers, ${body.leads} leads, ${body.tasks} tasks, and ${body.activity} saved actions. Supabase: ${body.supabase}.`
-        );
+        setHealth(`${body.local} Supabase: ${body.supabase}. ${body.migrations} ${body.backup}`);
       })
       .catch(() => setHealth("The local database did not respond."));
   }, []);

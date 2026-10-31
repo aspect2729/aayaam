@@ -2,6 +2,7 @@ import {
   BadgeCheck,
   FileText,
   LayoutGrid,
+  MessageCircle,
   Megaphone,
   Settings,
   ShoppingBag,
@@ -23,9 +24,10 @@ export type NavItem = {
 
 export const homeNav: NavItem[] = [
   { href: "/", label: "Overview", description: "Business overview", icon: LayoutGrid },
-  { href: "/#brain", label: "Business Brain", description: "Your AI co-pilot", icon: Sparkles },
+  { href: "/brain", label: "Business Brain", description: "Insights and approvals", icon: Sparkles },
   { href: "/sales", label: "Leads", description: "Pipeline and follow-ups", icon: TrendingUp },
   { href: "/sales", label: "Sales", description: "Pipeline, follow-ups, and recovery", icon: TrendingUp },
+  { href: "/outreach", label: "Qualification", description: "WhatsApp and email follow-up", icon: MessageCircle },
   { href: "/marketing", label: "Marketing", description: "Local SEO, reviews, and campaigns", icon: Megaphone },
   { href: "/customers", label: "Customers", description: "WhatsApp-first relationships", icon: Users },
   { href: "/commerce", label: "Commerce", description: "Products, orders, and stock", icon: ShoppingBag },
@@ -35,7 +37,7 @@ export const homeNav: NavItem[] = [
 
 export const toolNav: NavItem[] = [
   { href: "/integrations", label: "Integrations", description: "Connected tools", icon: ArrowUpRight },
-  { href: "/agents", label: "Reports", description: "What ran, and what needs approval", icon: FileText },
+  { href: "/agents", label: "Agent activity", description: "What ran, and what needs approval", icon: FileText },
   { href: "/settings/permissions", label: "Settings", description: "How much the Business Brain can do", icon: Settings },
 ];
 
@@ -43,11 +45,11 @@ export const navItems: NavItem[] = [...homeNav.filter((item) => item.label !== "
 
 export const topPills = [
   { href: "/", label: "Dashboard" },
-  { href: "/finance", label: "Analytics" },
+  { href: "/finance", label: "Finance" },
   { href: "/sales", label: "Leads" },
   { href: "/sales", label: "Sales" },
   { href: "/marketing", label: "Marketing" },
-  { href: "/agents", label: "Reports" },
+  { href: "/agents", label: "Agent activity" },
 ];
 
 export function isNavActive(pathname: string, href: string) {

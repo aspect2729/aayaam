@@ -142,6 +142,13 @@ export function switchBusiness(db: Database.Database, token: string, businessId:
   db.prepare(`UPDATE sessions SET active_business_id = ? WHERE id = ?`).run(businessId, session.id);
 }
 
+export function sessionProfile(db: Database.Database, token: string | undefined) {
+  const actor = actorFromToken(db, token);
+  if (!actor) return null;
+  const user = db.prepare(`SELECT name FROM users WHERE id = ?`).get(actor.userId) as { name: string } | undefined;
+  return { name: user?.name ?? "Owner", role: actor.role };
+}
+
 export function destroySession(db: Database.Database, token: string) {
   db.prepare(`DELETE FROM sessions WHERE token_hash = ?`).run(hashToken(token));
 }

@@ -187,7 +187,7 @@ export type Order = {
   items: string;
   total: string;
   status: OrderStatus;
-  channel: "Razorpay" | "Shiprocket" | "Counter";
+  channel: "Razorpay" | "Shiprocket" | "Recorded";
   date: string;
 };
 
@@ -351,7 +351,8 @@ export type IntegrationDef = {
   description: string;
   mark: string;
   tone: ChipTone;
-  special?: "approval" | "later";
+  special?: "approval" | "later" | "awaiting";
+  commerceOnly?: boolean;
 };
 
 export type OnboardingTool = {

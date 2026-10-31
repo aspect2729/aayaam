@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { useAskBrain } from "@/lib/ask-brain";
 import { useBusiness } from "@/lib/business-context";
+import { istLabel } from "@/lib/ist";
+import type { BusinessProfile } from "@/lib/types";
 import { record } from "@/lib/record";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +20,7 @@ export default function OverviewPage() {
   const { business } = useBusiness();
   const { openWith } = useAskBrain();
   const [range, setRange] = useState("This Month");
+  const [todayLabel, setTodayLabel] = useState("Asia/Kolkata");
   const revenue = business.financeKpis[0];
   const expenses = business.financeKpis[1];
   const enquiries = business.kpis.find((item) => item.id === "enq") ?? business.kpis[1];
@@ -25,6 +28,10 @@ export default function OverviewPage() {
   const reviewAvg =
     business.reviews.reduce((sum, review) => sum + review.rating, 0) / Math.max(business.reviews.length, 1);
   const expenseTotal = business.expenses.reduce((sum, item) => sum + item.value, 0);
+
+  useEffect(() => {
+    setTodayLabel(istLabel());
+  }, []);
 
   useEffect(() => {
     if (window.location.hash !== "#brain") return;
@@ -163,7 +170,10 @@ export default function OverviewPage() {
 
         <article className="rounded-[24px] bg-white p-5 shadow-card">
           <div className="flex items-center justify-between">
-            <p className="text-[15px] font-semibold">Today&apos;s Schedule</p>
+            <div>
+              <p className="text-[15px] font-semibold">Today&apos;s Schedule</p>
+              <p className="text-[12px] text-secondary">{todayLabel}</p>
+            </div>
             <Link href="/operations" className="text-[13px] font-medium text-accent">
               See all →
             </Link>
@@ -216,40 +226,101 @@ export default function OverviewPage() {
           </div>
         </article>
 
-        <article className="rounded-[24px] bg-white p-5 shadow-card">
-          <div className="flex items-center justify-between">
-            <p className="text-[15px] font-semibold">Inventory Status</p>
-            <Link href="/commerce" className="text-[13px] font-medium text-accent">
-              View all →
-            </Link>
-          </div>
-          <ul className="mt-4 space-y-2">
-            {business.products.slice(0, 3).map((product, index) => {
-              const low = product.stock <= 8 || product.costMissing;
-              return (
-                <li
-                  key={product.id}
-                  className={cn(
-                    "flex items-center justify-between rounded-2xl px-3 py-3 transition-transform duration-200 hover:translate-x-0.5",
-                    low ? "bg-[#FDECEC]" : index === 1 ? "bg-[#E8F8EF]" : "bg-[#E7F7F4]"
-                  )}
-                >
-                  <span>
-                    <span className="block text-[14px] font-medium">{product.name}</span>
-                    <span className="text-[12px] text-secondary">
-                      {low ? `Low stock · ${product.stock} left` : `In stock · ${product.stock} units`}
-                    </span>
-                  </span>
-                  <span className="text-secondary" aria-hidden>
-                    ›
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-        </article>
+        <WorkspaceMix businessType={business.type} customers={business.customers} products={business.products} events={business.events} />
       </div>
     </div>
+  );
+}
+
+function WorkspaceMix({
+  businessType,
+  customers,
+  products,
+  events,
+}: {
+  businessType: BusinessProfile["type"];
+  customers: BusinessProfile["customers"];
+  products: BusinessProfile["products"];
+  events: BusinessProfile["events"];
+}) {
+  if (businessType === "gym") {
+    const due = customers.filter((customer) => customer.segment === "Renewal due");
+    return (
+      <article className="rounded-[24px] bg-white p-5 shadow-card">
+        <div className="flex items-center justify-between">
+          <p className="text-[15px] font-semibold">Renewals due</p>
+          <Link href="/customers" className="text-[13px] font-medium text-accent">
+            View members →
+          </Link>
+        </div>
+        <ul className="mt-4 space-y-2">
+          {(due.length ? due : customers).slice(0, 3).map((customer, index) => (
+            <li key={customer.id} className={cn("flex items-center justify-between rounded-2xl px-3 py-3", index === 0 ? "bg-[#FDECEC]" : "bg-[#E7F7F4]")}>
+              <span>
+                <span className="block text-[14px] font-medium">{customer.name}</span>
+                <span className="text-[12px] text-secondary">{customer.segment} · {customer.value}</span>
+              </span>
+              <span className="text-secondary" aria-hidden>›</span>
+            </li>
+          ))}
+        </ul>
+      </article>
+    );
+  }
+
+  if (businessType === "interior") {
+    const visits = events.filter((event) => event.title.toLowerCase().includes("visit"));
+    return (
+      <article className="rounded-[24px] bg-white p-5 shadow-card">
+        <div className="flex items-center justify-between">
+          <p className="text-[15px] font-semibold">Site visits</p>
+          <Link href="/operations" className="text-[13px] font-medium text-accent">
+            View schedule →
+          </Link>
+        </div>
+        <ul className="mt-4 space-y-2">
+          {(visits.length ? visits : events).slice(0, 3).map((event, index) => (
+            <li key={event.id} className={cn("rounded-2xl px-3 py-3", index === 0 ? "bg-[#F3EEFF]" : "bg-[#E7F7F4]")}>
+              <span className="block text-[14px] font-medium">{event.title}</span>
+              <span className="text-[12px] text-secondary">{event.start} · {event.detail}</span>
+            </li>
+          ))}
+        </ul>
+      </article>
+    );
+  }
+
+  return (
+    <article className="rounded-[24px] bg-white p-5 shadow-card">
+      <div className="flex items-center justify-between">
+        <p className="text-[15px] font-semibold">Inventory Status</p>
+        <Link href="/commerce" className="text-[13px] font-medium text-accent">
+          View all →
+        </Link>
+      </div>
+      <ul className="mt-4 space-y-2">
+        {products.slice(0, 3).map((product, index) => {
+          const low = product.stock <= 8 || product.costMissing;
+          return (
+            <li
+              key={product.id}
+              className={cn(
+                "flex items-center justify-between rounded-2xl px-3 py-3 transition-transform duration-200 hover:translate-x-0.5",
+                low ? "bg-[#FDECEC]" : index === 1 ? "bg-[#E8F8EF]" : "bg-[#E7F7F4]"
+              )}
+            >
+              <span>
+                <span className="block text-[14px] font-medium">{product.name}</span>
+                <span className="text-[12px] text-secondary">
+                  {low ? `Low stock · ${product.stock} left` : `In stock · ${product.stock} units`}
+                </span>
+              </span>
+              <span className="text-secondary" aria-hidden>›</span>
+            </li>
+          );
+        })}
+      </ul>
+    </article>
   );
 }
 

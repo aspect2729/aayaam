@@ -7,6 +7,7 @@ import { toneClasses } from "@/components/shared/status-chip";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "@/components/ui/use-toast";
+import { integrationForBusiness } from "@/lib/business-types";
 import { integrationCatalog } from "@/lib/mock-data";
 import { useBusiness } from "@/lib/business-context";
 import { record } from "@/lib/record";
@@ -15,12 +16,23 @@ import { cn } from "@/lib/utils";
 export default function IntegrationsPage() {
   const { business } = useBusiness();
   const [connected, setConnected] = useState<string[]>(business.connectedIntegrations);
+  const [showAll, setShowAll] = useState(false);
+  const visible = integrationCatalog.filter((item) => integrationForBusiness(business.type, item.commerceOnly, showAll));
 
   return (
     <div className="space-y-4">
-      <IllustrativeNote />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <IllustrativeNote />
+        <button
+          className="h-9 rounded-full bg-white px-3 text-[13px] font-medium shadow-card"
+          onClick={() => setShowAll((value) => !value)}
+          aria-pressed={showAll}
+        >
+          {showAll ? "Showing every integration" : "Show all integrations"}
+        </button>
+      </div>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {integrationCatalog.map((item) => {
+        {visible.map((item) => {
           const isOn = connected.includes(item.id);
           return (
             <Card key={item.id} className="flex flex-col p-5 transition-shadow hover:shadow-cardHover">
@@ -38,14 +50,16 @@ export default function IntegrationsPage() {
                   <StatusChip tone="sand">API approval required</StatusChip>
                 ) : item.special === "later" ? (
                   <span className="text-[12px] text-muted">Coming later</span>
+                ) : item.special === "awaiting" ? (
+                  <StatusChip tone="sand">Awaiting setup</StatusChip>
                 ) : isOn ? (
                   <StatusChip tone="sand">Saved, not connected</StatusChip>
                 ) : (
                   <StatusChip tone="blue">Not connected</StatusChip>
                 )}
-                {item.special === "later" ? (
+                {item.special === "later" || item.special === "awaiting" ? (
                   <Button size="sm" variant="outline" disabled>
-                    Coming later
+                    {item.special === "later" ? "Coming later" : "Awaiting setup"}
                   </Button>
                 ) : item.special === "approval" ? (
                   <Button
