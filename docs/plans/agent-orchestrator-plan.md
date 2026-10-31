@@ -29,12 +29,10 @@ Checked on 31 Oct 2026:
 
 | Tier | Google | OpenAI |
 | --- | --- | --- |
-| FAST | `gemini-3.5-flash-lite` $0.30 / $2.50 | `gpt-6-luna` $0.10 / $0.50 under 272K |
-| STANDARD | `gemini-3.8-flash` $0.75 / $3.75 through 31 Dec 2026, then $1.50 / $7.50 | `gpt-5.4-mini` $0.75 / $4.50 |
-| ESCALATION | not set | `gpt-6.1-sol` $2 / $10, off unless the run is flagged |
+| FAST, STANDARD, ESCALATION | `gemini-3.5-flash-lite` $0.30 / $2.50 | `gpt-6-luna` $0.10 / $0.50 under 272K |
 | EMBED | `gemini-embedding-001` $0.15 | `text-embedding-3-small` $0.02 |
 
-`gemini-3.8-flash` is the current Flash for new projects. Gemini 2.5 is limited to projects that already used it.
+Every tier uses the cheapest verified model. OpenAI is primary. Gemini Flash-Lite is the fallback. Gemini 2.5 is limited to projects that already used it.
 
 ## Build order in this pass
 

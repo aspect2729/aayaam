@@ -3,8 +3,8 @@ export type ProviderName = "google" | "openai";
 
 const defaults: Record<Tier, Record<ProviderName, string>> = {
   FAST: { google: "gemini-3.5-flash-lite", openai: "gpt-6-luna" },
-  STANDARD: { google: "gemini-3.8-flash", openai: "gpt-5.4-mini" },
-  ESCALATION: { google: "gemini-3.8-flash", openai: "gpt-6.1-sol" },
+  STANDARD: { google: "gemini-3.5-flash-lite", openai: "gpt-6-luna" },
+  ESCALATION: { google: "gemini-3.5-flash-lite", openai: "gpt-6-luna" },
   EMBED: { google: "gemini-embedding-001", openai: "text-embedding-3-small" },
 };
 

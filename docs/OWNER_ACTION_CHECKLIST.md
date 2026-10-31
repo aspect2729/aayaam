@@ -249,7 +249,7 @@ Submit these only for an interior-design WhatsApp account. Category and body mus
   1. Create a Gemini key and an OpenAI key. Set a spend limit in each dashboard.
   2. Set `FEATURE_AI=1` only after both keys exist if you want fallback. One key is enough for the primary provider.
   3. Set `AI_USD_INR_RATE` from the rate you actually use. The app does not invent one, so the ₹500 monthly budget is not enforced until this is set.
-  4. Confirm the model ids in `.env.example` still match [Google pricing](https://ai.google.dev/gemini-api/docs/pricing) and [OpenAI pricing](https://developers.openai.com/api/docs/pricing). `gemini-3.8-flash` is listed at $0.75 / $3.75 per million tokens through 31 Dec 2026, then $1.50 / $7.50.
+  4. Confirm the model ids in `.env.example` still match [Google pricing](https://ai.google.dev/gemini-api/docs/pricing) and [OpenAI pricing](https://developers.openai.com/api/docs/pricing). The app uses `gpt-6-luna` ($0.10 / $0.50) and falls back to `gemini-3.5-flash-lite` ($0.30 / $2.50).
 - **Give back:** `GOOGLE_GENERATIVE_AI_API_KEY` or `GEMINI_API_KEY`, `OPENAI_API_KEY`, `FEATURE_AI=1`, `AI_USD_INR_RATE`, `AI_GLOBAL_DAILY_BUDGET_USD`.
 - **Where to put it:** Vercel, server-only. Never `NEXT_PUBLIC_`.
 - **Cost:** The two pricing pages above.

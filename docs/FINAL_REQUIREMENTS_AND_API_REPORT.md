@@ -186,11 +186,7 @@ Model ids and standard prices are in `lib/ai/pricing.ts`. Sources: [Gemini prici
 
 | Tier | Default model | Standard price per 1M tokens |
 | --- | --- | --- |
-| FAST, Google | `gemini-3.5-flash-lite` | $0.30 input, $2.50 output |
-| STANDARD, Google | `gemini-3.8-flash` | $0.75 / $3.75 through 31 Dec 2026, then $1.50 / $7.50 |
-| FAST, OpenAI | `gpt-6-luna` | $0.10 / $0.50 under 272K context |
-| STANDARD, OpenAI | `gpt-5.4-mini` | $0.75 / $4.50 |
-| ESCALATION, OpenAI | `gpt-6.1-sol` | $2 / $10 under 272K context. Off unless a run asks for it. |
+| Every chat tier | `gpt-6-luna`, fallback `gemini-3.5-flash-lite` | $0.10 / $0.50, fallback $0.30 / $2.50 |
 | EMBED, Google | `gemini-embedding-001` | $0.15 input |
 
 `FEATURE_AI` defaults off. The workspace assistant classifies a business in code. A model is asked only to rephrase a change list, and only when the flag and a key are present. No vector column was created: the embedding output size is not stated on the price page.
