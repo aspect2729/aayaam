@@ -50,6 +50,7 @@ const navModule: Record<string, ModuleKey | "tools"> = {
   "Agent activity": "tools",
   Integrations: "tools",
   Settings: "tools",
+  Assistant: "tools",
 };
 
 export function moduleEnabled(type: BusinessType, key: ModuleKey) {

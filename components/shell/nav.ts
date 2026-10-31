@@ -9,6 +9,7 @@ import {
   Sparkles,
   Square,
   TrendingUp,
+  Bot,
   Users,
   Wallet,
   ArrowUpRight,
@@ -38,6 +39,7 @@ export const homeNav: NavItem[] = [
 export const toolNav: NavItem[] = [
   { href: "/integrations", label: "Integrations", description: "Connected tools", icon: ArrowUpRight },
   { href: "/agents", label: "Agent activity", description: "What ran, and what needs approval", icon: FileText },
+  { href: "/assistant", label: "Assistant", description: "Describe the business and ask questions", icon: Bot },
   { href: "/settings/permissions", label: "Settings", description: "How much the Business Brain can do", icon: Settings },
 ];
 

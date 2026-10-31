@@ -13,6 +13,7 @@ const titles: Record<string, string> = {
   "/settings/permissions": "Settings",
   "/settings/system": "System",
   "/plans": "Plans",
+  "/assistant": "Assistant",
   "/outreach/unsubscribe": "Unsubscribe",
 };
 

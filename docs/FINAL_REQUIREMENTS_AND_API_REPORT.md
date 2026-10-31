@@ -180,6 +180,21 @@ What does not: Meta and email are not called. A message is `awaiting_provider` o
 6. Apply `db/postgres/002_rls.sql` on a staging Postgres project and rerun the tenant test there before calling the database production-ready.
 7. Keep Business Brain on the deterministic path until the ledger queries are the ones a merchant trusts. A model key must not become a source of totals.
 
+## AI gateway (checked 31 Oct 2026)
+
+Model ids and standard prices are in `lib/ai/pricing.ts`. Sources: [Gemini pricing](https://ai.google.dev/gemini-api/docs/pricing) (page updated 30 Oct 2026) and [OpenAI pricing](https://developers.openai.com/api/docs/pricing).
+
+| Tier | Default model | Standard price per 1M tokens |
+| --- | --- | --- |
+| FAST, Google | `gemini-3.5-flash-lite` | $0.30 input, $2.50 output |
+| STANDARD, Google | `gemini-3.8-flash` | $0.75 / $3.75 through 31 Dec 2026, then $1.50 / $7.50 |
+| FAST, OpenAI | `gpt-6-luna` | $0.10 / $0.50 under 272K context |
+| STANDARD, OpenAI | `gpt-5.4-mini` | $0.75 / $4.50 |
+| ESCALATION, OpenAI | `gpt-6.1-sol` | $2 / $10 under 272K context. Off unless a run asks for it. |
+| EMBED, Google | `gemini-embedding-001` | $0.15 input |
+
+`FEATURE_AI` defaults off. The workspace assistant classifies a business in code. A model is asked only to rephrase a change list, and only when the flag and a key are present. No vector column was created: the embedding output size is not stated on the price page.
+
 ## Open-loop pass
 
 `docs/AUDIT_CURRENT_STATE.md` is the item-by-item status. `docs/OWNER_ACTION_CHECKLIST.md` is the manual work. This pass fixed cross-business demo rows, navigation labels, the gym overview card, the integrations filter, the Kolkata date, and the health text. Screens still read the demo profiles. Phone OTP, Google sign-in, live providers, and a full Postgres migration are waiting on the checklist.
